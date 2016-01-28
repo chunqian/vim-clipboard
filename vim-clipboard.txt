@@ -1,0 +1,40 @@
+#!/bin/sh
+
+sudo apt-get remove --purge vim vim-runtime vim-gnome vim-tiny vim-common vim-gui-common
+sudo apt-get build-dep vim
+
+sudo mkdir /usr/include/lua5.1/include
+sudo ln -s /usr/include/luajit-2.0/* /usr/include/lua5.1/include
+sudo ln -s /usr/lib/x86_64-linux-gnu/liblua5.1.so /usr/local/lib/liblua.so
+
+cd ~
+hg clone https://code.google.com/p/vim/
+cd vim/src
+make distclean
+./configure --prefix=/home/local/vim74 \
+            --with-features=huge \
+            --enable-largefile \
+            --disable-netbeans \
+            --enable-rubyinterp=yes \
+            --enable-pythoninterp=yes \
+            --with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu \
+            --enable-perlinterp=yes \
+            --enable-multibyte \
+            --enable-fontset \
+            --disable-gui \
+            --enable-xim \
+            --with-x \
+            --enable-luainterp=yes \
+            --with-lua-prefix=/usr/include/lua5.1 \
+            --enable-fail-if-missing \
+            --enable-cscope
+make 
+
+sudo make install
+
+PATH=/home/local/vim74/bin:$PATH; export PATH
+
+cd ..
+sudo mkdir /usr/share/vim
+sudo mkdir /usr/share/vim/vim74
+sudo cp -fr runtime/* /usr/share/vim/vim74/
